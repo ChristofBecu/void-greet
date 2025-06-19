@@ -16,9 +16,12 @@ include(Catch)
 
 # Create test executable
 add_executable(greeting_tests
-    tests/unit/test_greeting_types.cpp
-    tests/unit/test_expected.cpp
-    tests/unit/test_error_handling.cpp
+    tests/unit/greeting/test_greeting_types.cpp
+    tests/unit/greeting/test_expected.cpp
+    tests/unit/greeting/test_error_handling.cpp
+    tests/unit/greeting/test_error_enumeration.cpp
+    tests/unit/greeting/test_validation.cpp
+    tests/unit/greeting/test_expected_comprehensive.cpp
 )
 
 # Link with Catch2 and set up proper includes
