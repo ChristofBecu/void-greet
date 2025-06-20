@@ -26,6 +26,7 @@ target_compile_features(greeting_types INTERFACE cxx_std_23)
 # Create domain library with core domain types
 add_library(greeting_domain STATIC
     src/domain/greeting_types.cpp
+    src/domain/validation.cpp
 )
 target_link_libraries(greeting_domain PUBLIC greeting_types)
 target_compile_features(greeting_domain PUBLIC cxx_std_23)

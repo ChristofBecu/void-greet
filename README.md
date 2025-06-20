@@ -168,11 +168,11 @@ The project uses **Catch2 v3** for comprehensive unit testing with:
 - [x] Design error enumeration with descriptive messages *(Complete - comprehensive error system with domains, severity, and metadata)*
 - [x] Add compile-time validation using `if consteval` *(Complete - implemented with runtime/compile-time branching)*
 
-### **1.2 Domain Layer Setup** 📝 *2/4 Complete*
+### **1.2 Domain Layer Setup** 📝 *3/4 Complete*
 
 - [x] `include/greeting/concepts.hpp` - C++20 concepts for greeting contracts ✅
 - [x] `src/domain/greeting_types.cpp` - Core domain types ✅
-- [ ] `src/domain/validation.cpp` - Input validation logic
+- [x] `src/domain/validation.cpp` - Input validation logic ✅
 - [ ] Basic unit tests for domain logic
 
 ### **1.3 Build System Enhancement** ✅ *1/4 Complete*
