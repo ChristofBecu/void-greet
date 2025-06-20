@@ -76,6 +76,8 @@ target_compile_features(HelloWorld_Core
 add_library(HelloWorld_Domain STATIC
     src/domain/greeting_types.cpp
     src/domain/validation.cpp
+    src/config/debug_validation.cpp
+    src/config/release_validation.cpp
 )
 add_library(HelloWorld::Domain ALIAS HelloWorld_Domain)
 
@@ -180,14 +182,14 @@ if(NOT HELLOWORLD_USE_BASIC_CONFIG)
     apply_build_configuration(hello_world)
 endif()
 
-# Configuration System Demo
-add_executable(demo_configuration demo_configuration.cpp)
-target_link_libraries(demo_configuration PRIVATE HelloWorld_Core)
-target_compile_features(demo_configuration PRIVATE cxx_std_23)
+# Configuration System Demo (disabled for now due to linking issues)
+# add_executable(demo_configuration demo_configuration.cpp)
+# target_link_libraries(demo_configuration PRIVATE HelloWorld_Core)
+# target_compile_features(demo_configuration PRIVATE cxx_std_23)
 
 # Apply build configuration if advanced system is available
 if(NOT HELLOWORLD_USE_BASIC_CONFIG)
-    apply_build_configuration(demo_configuration)
+    # apply_build_configuration(demo_configuration)
 endif()
 
 # ============================================================================

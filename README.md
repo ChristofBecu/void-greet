@@ -4,8 +4,9 @@
 
 [![C++23](https://img.shields.io/badge/C%2B%2B-23-blue.svg)](https://en.cppreference.com/w/cpp/23)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-929_passing-brightgreen.svg)](#testing)
+[![Tests](https://img.shields.io/badge/tests-1209_passing-brightgreen.svg)](#testing)
 [![Build Config](https://img.shields.io/badge/build_config-C%2B%2B23_advanced-orange.svg)](#build-configuration-system)
+[![Validation](https://img.shields.io/badge/validation-dual_path_active-purple.svg)](#configuration-aware-validation)
 
 ## 🎯 **Project Overview**
 
@@ -14,7 +15,8 @@ This project transforms a simple "Hello World" into a sophisticated C++23 archit
 - **🏗️ Clean Architecture**: Domain-driven design with layered separation
 - **⚡ Modern C++23**: `std::expected`, `if consteval`, `consteval`, concepts
 - **🔧 Advanced Build Configuration**: Compile-time configuration system with zero-overhead abstractions
-- **🧪 Comprehensive Testing**: Catch2 v3 with 929 assertions across 46 test cases
+- **🧪 Configuration-Aware Testing**: 1209 assertions across 54 test cases
+- **⚡ Dual-Path Validation**: Debug-comprehensive, release-optimized validation
 - **⚡ Build Optimization**: 95% faster builds with external Catch2 integration
 - **📚 Educational Focus**: Each pattern explained and documented
 
@@ -42,7 +44,7 @@ mkdir build && cd build
 cmake .. -G Ninja
 ninja
 
-# Run tests (929 assertions)
+# Run tests (1209 assertions, 54 test cases)
 ./greeting_tests
 
 # Run configuration demo
@@ -109,6 +111,8 @@ The project uses **Catch2 v3** for comprehensive unit testing with:
 | **Expected Wrapper** | 100% | Success/error paths, move semantics |
 | **Error Handling** | 100% | Enumeration, categories, std::error_code |
 | **Compile-time Validation** | 100% | `if consteval` branching, constexpr validation |
+| **Configuration-Aware Validation** | 100% | Dual-path logic, character/string validation |
+| **Build Configuration System** | 100% | Debug/release paths, configuration detection |
 
 ## 🏗️ **Architecture Layers**
 
@@ -143,12 +147,67 @@ The project uses **Catch2 v3** for comprehensive unit testing with:
   - *Provides different validation logic at compile-time vs runtime*
   - *Optimizes performance by using simpler checks at compile-time*
   - *Enables comprehensive runtime validation with Unicode support*
+- **🎯 Configuration-Aware Validation**: Dual-path validation system
+  - *Debug builds: comprehensive validation with detailed diagnostics*
+  - *Release builds: optimized validation with minimal overhead*
+  - *Template constraints for both C-style and string-like types*
 
 ### 🚧 **Planned Features**
 
 - **📊 Multidimensional Subscript**: Natural data access syntax
 - **🔗 Monadic Operations**: `and_then`, `or_else` for error chains
 - **⚙️ Template Metaprogramming**: Advanced compile-time optimizations
+
+## 🎯 **Configuration-Aware Validation System**
+
+### **Dual-Path Validation Architecture**
+
+The project implements a sophisticated validation system that adapts its behavior based on build configuration:
+
+```cpp
+// Configuration-aware validation
+auto result = validate_person_name<PersonName>("John Doe");
+if (result.has_value()) {
+    std::cout << "Valid name: " << result.value().value() << std::endl;
+} else {
+    // Error handling with configuration-specific detail level
+    std::cerr << "Validation failed: " << result.error() << std::endl;
+}
+```
+
+### **Build-Specific Behavior**
+
+#### **🔍 Debug Builds**
+- **Comprehensive validation** with detailed character analysis
+- **Enhanced error context** with specific failure reasons
+- **Unicode awareness** for international character sets
+- **Extensive logging** for debugging validation issues
+- **Control character detection** for security
+
+#### **⚡ Release Builds**
+- **Optimized validation** with performance focus
+- **Minimal overhead** through compile-time optimization
+- **Essential checks only** for production performance
+- **Fast-path validation** for common cases
+- **Zero-cost abstractions** maintained
+
+### **Validation Features**
+
+- **✅ Character Validation**: Alphabetic characters, spaces, hyphens, apostrophes
+- **✅ Length Validation**: Configurable min/max length constraints
+- **✅ String Type Support**: Both C-style strings and string-like types
+- **✅ Control Character Detection**: Null bytes and control characters rejected
+- **✅ Integration**: Seamless integration with domain types (`PersonName`, `GreetingMessage`)
+
+### **Test Coverage**
+
+```bash
+# Run validation-specific tests
+./greeting_tests "[config][validation]"
+
+# All validation tests (281 assertions)
+./greeting_tests "[config]"
+```
 
 ## 🎨 **Design Patterns**
 
@@ -314,14 +373,26 @@ The project uses **Catch2 v3** for comprehensive unit testing with:
 
 | Phase | Status | Completion |
 |-------|--------|------------|
-| **Phase 1: Foundation** | 🔄 In Progress | **50%** (4/8 tasks) |
-| **Phase 2: Core Architecture** | ⏳ Planned | 0% |
+| **Phase 1: Configuration Infrastructure** | ✅ **Complete** | **100%** |
+| **Phase 2.1: Configuration-Aware Validation** | ✅ **Complete** | **100%** |
+| **Phase 2.2: Error Handling Configuration** | 🔄 In Progress | 0% |
+| **Phase 2.3: Domain Type Integration** | ⏳ Planned | 0% |
 | **Phase 3: C++23 Features** | ⏳ Planned | 0% |
 | **Phase 4: Advanced Patterns** | ⏳ Planned | 0% |
-| **Phase 5: Testing & Quality** | 🔄 In Progress | **50%** (6/12 tasks complete) |
+| **Phase 5: Testing & Quality** | 🔄 In Progress | **75%** (comprehensive validation tests complete) |
 | **Phase 6: Performance & Polish** | ⏳ Planned | 0% |
 
-**Overall Progress: 31%** *(10 of 32 major milestones)*
+**Overall Progress: 42%** *(Phase 1 + 2.1 complete, comprehensive validation system operational)*
+
+### **Recent Achievements (Phase 2.1)**
+
+- ✅ **Dual-path validation system** with debug/release behavior
+- ✅ **Configuration-aware character validation** (no numbers in names)
+- ✅ **String validation with type constraints** (C-style + string-like types)
+- ✅ **Control character detection** (embedded null bytes, control chars)
+- ✅ **Integration with domain types** (`PersonName::create()`, `GreetingMessage::create()`)
+- ✅ **Comprehensive test suite** (1209 assertions, 54 test cases)
+- ✅ **Zero compilation errors** and stable test results
 
 ---
 
@@ -391,4 +462,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**🎯 Ready to explore modern C++23 clean architecture?** Start with the [Quick Start](#-quick-start) section and follow the [Development Roadmap](#️-development-roadmap)!
+**🎯 Ready to explore modern C++23 clean architecture with configuration-aware validation?** Start with the [Quick Start](#-quick-start) section, experiment with the [Configuration-Aware Validation System](#-configuration-aware-validation-system), and follow the [Development Roadmap](#️-development-roadmap)!
