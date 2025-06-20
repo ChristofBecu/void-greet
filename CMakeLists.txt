@@ -15,6 +15,24 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # ============================================================================
+# C++23 Feature Detection and Validation
+# ============================================================================
+
+include(cmake/FeatureDetection.cmake)
+
+# Run C++23 feature validation
+validate_cpp23_build_system()
+
+# Check if build configuration system can be enabled
+if(NOT HELLOWORLD_CPP23_BUILD_CONFIG_READY)
+    message(WARNING "C++23 Build Configuration System not available - using basic configuration")
+    set(HELLOWORLD_USE_BASIC_CONFIG ON CACHE BOOL "Use basic configuration fallback")
+else()
+    message(STATUS "C++23 Build Configuration System ready for implementation")
+    set(HELLOWORLD_USE_BASIC_CONFIG OFF CACHE BOOL "Use basic configuration fallback")
+endif()
+
+# ============================================================================
 # Compiler Configuration
 # ============================================================================
 
@@ -137,6 +155,34 @@ target_compile_features(hello_world
 
 # Include testing setup
 include(cmake/Testing.cmake)
+
+# ============================================================================
+# Build Configuration Validation Tools
+# ============================================================================
+
+# Add configuration validator executable
+add_executable(config_validator tools/config_validator.cpp)
+target_compile_features(config_validator PRIVATE cxx_std_23)
+target_link_libraries(config_validator PRIVATE HelloWorld::Core)
+
+# Set compiler flags for validation tool
+target_compile_options(config_validator PRIVATE
+    $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall -Wextra -Wpedantic>
+    $<$<CXX_COMPILER_ID:MSVC>:/W4>
+)
+
+# Add custom target to run validation
+add_custom_target(validate_config
+    COMMAND config_validator
+    DEPENDS config_validator
+    COMMENT "Running C++23 build configuration validation"
+    VERBATIM
+)
+
+# Add validation to the build process if requested
+if(HELLOWORLD_RUN_VALIDATION_ON_BUILD)
+    add_dependencies(HelloWorld_Domain validate_config)
+endif()
 
 # ============================================================================
 # Target Properties and Organization
