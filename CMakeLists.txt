@@ -30,20 +30,26 @@ if(NOT HELLOWORLD_CPP23_BUILD_CONFIG_READY)
 else()
     message(STATUS "C++23 Build Configuration System ready for implementation")
     set(HELLOWORLD_USE_BASIC_CONFIG OFF CACHE BOOL "Use basic configuration fallback")
+    
+    # Initialize the advanced C++23 build configuration system
+    include(cmake/BuildConfigurations.cmake)
+    initialize_build_configuration_system()
 endif()
 
 # ============================================================================
 # Compiler Configuration
 # ============================================================================
 
-# Base compiler flags
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
-
-# Debug configuration
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -DDEBUG")
-
-# Release configuration  
-set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
+if(HELLOWORLD_USE_BASIC_CONFIG)
+    # Basic compiler flags fallback
+    set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
+    set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -DDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
+else()
+    # Advanced configuration is handled via configuration targets
+    # Base flags are applied through HelloWorld_ConfigBase target
+    message(STATUS "Using advanced C++23 build configuration system")
+endif()
 
 # ============================================================================
 # Clean Architecture Layer Targets
@@ -81,11 +87,16 @@ target_compile_features(HelloWorld_Domain
     PUBLIC cxx_std_23
 )
 
-target_compile_options(HelloWorld_Domain
-    PRIVATE
-    $<$<CXX_COMPILER_ID:GNU,Clang>:-Wno-unused-parameter>
-    $<$<CXX_COMPILER_ID:MSVC>:/W4>
-)
+# Apply build configuration if advanced system is available
+if(NOT HELLOWORLD_USE_BASIC_CONFIG)
+    apply_build_configuration(HelloWorld_Domain)
+else()
+    target_compile_options(HelloWorld_Domain
+        PRIVATE
+        $<$<CXX_COMPILER_ID:GNU,Clang>:-Wno-unused-parameter>
+        $<$<CXX_COMPILER_ID:MSVC>:/W4>
+    )
+endif()
 
 # ============================================================================
 # Application Layer (Use Cases)
@@ -102,6 +113,11 @@ target_compile_features(HelloWorld_Application
     INTERFACE cxx_std_23
 )
 
+# Apply build configuration if advanced system is available
+if(NOT HELLOWORLD_USE_BASIC_CONFIG)
+    apply_build_configuration(HelloWorld_Application)
+endif()
+
 # ============================================================================
 # Infrastructure Layer (External Concerns)
 # ============================================================================
@@ -117,6 +133,11 @@ target_compile_features(HelloWorld_Infrastructure
     INTERFACE cxx_std_23
 )
 
+# Apply build configuration if advanced system is available
+if(NOT HELLOWORLD_USE_BASIC_CONFIG)
+    apply_build_configuration(HelloWorld_Infrastructure)
+endif()
+
 # ============================================================================
 # Executable Targets
 # ============================================================================
@@ -131,6 +152,11 @@ target_link_libraries(hello_simple
 target_compile_features(hello_simple 
     PRIVATE cxx_std_23
 )
+
+# Apply build configuration if advanced system is available
+if(NOT HELLOWORLD_USE_BASIC_CONFIG)
+    apply_build_configuration(hello_simple)
+endif()
 
 # Advanced Hello World executable (for future use)
 add_executable(hello_world)
@@ -149,6 +175,21 @@ target_compile_features(hello_world
     PRIVATE cxx_std_23
 )
 
+# Apply build configuration if advanced system is available
+if(NOT HELLOWORLD_USE_BASIC_CONFIG)
+    apply_build_configuration(hello_world)
+endif()
+
+# Configuration System Demo
+add_executable(demo_configuration demo_configuration.cpp)
+target_link_libraries(demo_configuration PRIVATE HelloWorld_Core)
+target_compile_features(demo_configuration PRIVATE cxx_std_23)
+
+# Apply build configuration if advanced system is available
+if(NOT HELLOWORLD_USE_BASIC_CONFIG)
+    apply_build_configuration(demo_configuration)
+endif()
+
 # ============================================================================
 # Testing Configuration
 # ============================================================================
@@ -165,11 +206,16 @@ add_executable(config_validator tools/config_validator.cpp)
 target_compile_features(config_validator PRIVATE cxx_std_23)
 target_link_libraries(config_validator PRIVATE HelloWorld::Core)
 
-# Set compiler flags for validation tool
-target_compile_options(config_validator PRIVATE
-    $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall -Wextra -Wpedantic>
-    $<$<CXX_COMPILER_ID:MSVC>:/W4>
-)
+# Apply build configuration if advanced system is available
+if(NOT HELLOWORLD_USE_BASIC_CONFIG)
+    apply_build_configuration(config_validator)
+else()
+    # Set compiler flags for validation tool (fallback)
+    target_compile_options(config_validator PRIVATE
+        $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall -Wextra -Wpedantic>
+        $<$<CXX_COMPILER_ID:MSVC>:/W4>
+    )
+endif()
 
 # Add custom target to run validation
 add_custom_target(validate_config
