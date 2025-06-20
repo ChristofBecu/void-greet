@@ -38,3 +38,6 @@
 // Strong type wrappers
 #include "person_name.hpp"
 #include "greeting_message.hpp"
+
+// Domain services
+#include "domain_service.hpp"

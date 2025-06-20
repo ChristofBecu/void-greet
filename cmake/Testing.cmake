@@ -22,13 +22,15 @@ add_executable(greeting_tests
     tests/unit/greeting/test_error_enumeration.cpp
     tests/unit/greeting/test_validation.cpp
     tests/unit/greeting/test_expected_comprehensive.cpp
+    tests/unit/greeting/test_domain_service.cpp
+    tests/unit/greeting/test_domain_validation.cpp
 )
 
 # Link with Catch2 and set up proper includes
 target_link_libraries(greeting_tests 
     PRIVATE 
     Catch2::Catch2WithMain
-    greeting_types
+    greeting_domain
 )
 
 target_include_directories(greeting_tests 
