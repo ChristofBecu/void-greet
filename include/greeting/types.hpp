@@ -5,20 +5,23 @@
  * @brief Integration header for greeting types and utilities
  * 
  * This header provides a single point of access to all greeting-related types,
- * error handling utilities, validation functions, and strong type wrappers.
- * It includes all modular components that were refactored from the original
- * monolithic types.hpp file.
+ * error handling utilities, validation functions, strong type wrappers, and
+ * C++20 concepts for type safety and contracts.
  * 
  * Usage:
  *   #include "greeting/types.hpp"
  *   
  * This will make available:
+ *   - C++20 concepts: Type safety contracts and constraints
  *   - Error handling: GreetingError, ErrorSeverity, ErrorDomain, error categories
  *   - Expected wrapper: Expected<T, E> for error handling
  *   - Validation utilities: name and message validation functions
  *   - Strong types: PersonName, GreetingMessage
  *   - Consteval validation: compile-time validation support
  */
+
+// C++20 concepts for type safety and contracts
+#include "concepts.hpp"
 
 // Core error system
 #include "error_codes.hpp"
