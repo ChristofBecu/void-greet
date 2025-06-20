@@ -30,7 +30,7 @@ add_executable(greeting_tests
 target_link_libraries(greeting_tests 
     PRIVATE 
     Catch2::Catch2WithMain
-    greeting_domain
+    HelloWorld_Domain
 )
 
 target_include_directories(greeting_tests 
