@@ -1,6 +1,21 @@
 # 🌟 Hello World Over Engineered Clean Code Architecture
 
-> A sophisticated C++23 showcase demonstrating clean architecture principles, modern C++ features, advanced build configurations, and comprehensive testing practices through an advanced "Hello World" implementation.
+```bash
+              .__     .___                                 __   
+___  __ ____  |__|  __| _/    ____ _______   ____   ____ _/  |_ 
+\  \/ //  _ \ |  | / __ |    / ___\\_  __ \_/ __ \_/ __ \\   __\
+ \   /(  <_> )|  |/ /_/ |   / /_/  >|  | \/\  ___/\  ___/ |  |  
+  \_/  \____/ |__|\____ |   \___  / |__|    \___  >\___  >|__|  
+                       \/  /_____/              \/     \/       
+
+                 Overengineered Abstracted
+                     Enterprise Ready
+                  Code Implementation of 
+                 "Hello, World!" in C++23
+```
+
+
+> A sophisticated C++23 showcase demonstrating clean architecture principles, modern C++ features, advanced build configurations, and comprehensive testing practices through an advanced "Hello, World!" implementation.
 
 [![C++23](https://img.shields.io/badge/C%2B%2B-23-blue.svg)](https://en.cppreference.com/w/cpp/23)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
