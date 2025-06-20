@@ -1,18 +1,14 @@
-# Download and set up Catch2 v3 for unit testing
-include(FetchContent)
+# ============================================================================
+# Optimized Catch2 Testing Configuration
+# ============================================================================
+# Uses external Catch2 installation when available for dramatically faster builds.
+# Falls back to FetchContent with optimizations when external not found.
+# ============================================================================
 
-FetchContent_Declare(
-  Catch2
-  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG        v3.7.1  # Use latest stable version
-)
+# Use optimized external Catch2 configuration
+include(cmake/ExternalCatch2.cmake)
 
-FetchContent_MakeAvailable(Catch2)
-
-# Include Catch2 CMake modules for test discovery
-list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
-include(CTest)
-include(Catch)
+# Note: CTest and Catch are now included in ExternalCatch2.cmake
 
 # Create test executable
 add_executable(greeting_tests
