@@ -118,3 +118,59 @@ SCENARIO("GreetingService error handling", "[GreetingService][domain][error]") {
         }
     }
 }
+
+// ============================================================================
+// Configuration-Aware Domain Service Tests
+// ============================================================================
+
+SCENARIO("GreetingService configuration-aware validation integration", "[GreetingService][config][validation]") {
+    
+    GIVEN("a greeting service") {
+        GreetingService service;
+        
+        WHEN("generating greeting with valid person name") {
+            auto greetingResult = service.generateGreetingWithValidation("Alice Johnson");
+            
+            THEN("greeting is generated successfully with validation") {
+                REQUIRE(greetingResult.has_value());
+                REQUIRE_THAT(greetingResult.value().value(), Equals("Hello, Alice Johnson!"));
+            }
+        }
+        
+        WHEN("generating formal greeting with valid person name") {
+            auto greetingResult = service.generateFormalGreetingWithValidation("Dr. Smith");
+            
+            THEN("formal greeting is generated successfully with validation") {
+                REQUIRE(greetingResult.has_value());
+                REQUIRE_THAT(greetingResult.value().value(), Equals("Hello, Dr. Smith!"));
+            }
+        }
+        
+        WHEN("generating greeting with invalid person name") {
+            auto greetingResult = service.generateGreetingWithValidation("");
+            
+            THEN("validation error is propagated") {
+                REQUIRE_FALSE(greetingResult.has_value());
+                REQUIRE(greetingResult.error() == GreetingError::EmptyName);
+            }
+        }
+        
+        WHEN("generating greeting with too short person name") {
+            auto greetingResult = service.generateGreetingWithValidation("X");
+            
+            THEN("validation error is propagated") {
+                REQUIRE_FALSE(greetingResult.has_value());
+                REQUIRE(greetingResult.error() == GreetingError::NameTooShort);
+            }
+        }
+        
+        WHEN("generating greeting with invalid characters") {
+            auto greetingResult = service.generateGreetingWithValidation("John@Smith");
+            
+            THEN("validation error is propagated") {
+                REQUIRE_FALSE(greetingResult.has_value());
+                REQUIRE(greetingResult.error() == GreetingError::InvalidName);
+            }
+        }
+    }
+}
