@@ -12,6 +12,7 @@
 #include "config/release_config.hpp"
 #include "greeting/expected.hpp"
 #include "greeting/error_codes.hpp"
+#include "greeting/config_aware_type_system.hpp"
 #include <string_view>
 #include <type_traits>
 
@@ -139,7 +140,13 @@ ConfigAwareValidationResult<MessageType> validate_greeting_message_impl(std::str
  * @return Validation result adapted to current configuration
  */
 template<typename NameType>
+    requires std::same_as<NameType, PersonName>
 ConfigAwareValidationResult<NameType> validate_person_name(std::string_view name) {
+    // Assert zero-overhead properties in debug builds
+    if constexpr (greeting::types::is_debug_configuration()) {
+        greeting::types::performance::assert_zero_overhead<NameType>();
+    }
+    
     // Delegate to configuration-specific implementations
     return validate_person_name_impl<NameType>(name);
 }
@@ -148,7 +155,13 @@ ConfigAwareValidationResult<NameType> validate_person_name(std::string_view name
  * @brief Configuration-aware greeting message validation
  */
 template<typename MessageType>
+    requires std::same_as<MessageType, GreetingMessage>  
 ConfigAwareValidationResult<MessageType> validate_greeting_message(std::string_view message) {
+    // Assert zero-overhead properties in debug builds
+    if constexpr (greeting::types::is_debug_configuration()) {
+        greeting::types::performance::assert_zero_overhead<MessageType>();
+    }
+    
     // Delegate to configuration-specific implementations
     return validate_greeting_message_impl<MessageType>(message);
 }
@@ -247,15 +260,8 @@ inline ValidationError make_config_aware_message_too_long_error(
 
 #ifdef __cpp_concepts
 
-/**
- * @brief Concept for types that support configuration-aware validation
- */
-template<typename T>
-concept ConfigAwareValidatable = requires(T t, std::string_view input) {
-    { validate_person_name<T>(input) } -> std::same_as<ConfigAwareValidationResult<T>>;
-} || requires(T t, std::string_view input) {
-    { validate_greeting_message<T>(input) } -> std::same_as<ConfigAwareValidationResult<T>>;
-};
+// Note: ConfigAwareValidatable concept is now defined in config_aware_type_system.hpp
+// to avoid circular dependencies and provide better type system organization
 
 /**
  * @brief Concept for validation contexts
