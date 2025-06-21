@@ -22,6 +22,7 @@ add_executable(greeting_tests
     tests/unit/greeting/test_domain_validation.cpp
     tests/config/test_build_configuration.cpp
     tests/config/test_config_aware_validation.cpp
+    tests/config/test_release_optimizations.cpp
 )
 
 # Link with Catch2 and set up proper includes

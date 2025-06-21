@@ -8,6 +8,8 @@
 // ============================================================================
 
 #include "config/build_config.hpp"
+#include "config/debug_config.hpp"
+#include "config/release_config.hpp"
 #include "greeting/expected.hpp"
 #include "greeting/error_codes.hpp"
 #include <string_view>
@@ -34,6 +36,19 @@ template<typename T>
 using ConfigAwareValidationResult = Expected<T, GreetingError>;
 
 /**
+ * @brief Configuration-aware validation error type
+ * 
+ * Selects appropriate error type based on build configuration:
+ * - Debug: Detailed error context with suggestions and source location
+ * - Release: Minimal error context for zero-overhead
+ */
+#ifdef HELLOWORLD_DEBUG_BUILD
+using ValidationError = config::debug::ValidationError;
+#else
+using ValidationError = config::release::ValidationError;
+#endif
+
+/**
  * @brief Validation context for configuration-aware operations
  */
 class ValidationContext {
@@ -49,21 +64,33 @@ public:
      * @brief Check if detailed validation is enabled
      */
     static constexpr bool enable_detailed_validation() noexcept {
-        return true; // Configuration-dependent in implementation
+        #ifdef HELLOWORLD_DEBUG_BUILD
+            return config::debug::enable_detailed_errors();
+        #else
+            return config::release::enable_detailed_errors();
+        #endif
     }
     
     /**
      * @brief Check if stacktrace should be captured on errors
      */
     static constexpr bool enable_stacktrace() noexcept {
-        return true; // Configuration-dependent in implementation
+        #ifdef HELLOWORLD_DEBUG_BUILD
+            return config::debug::enable_stacktrace();
+        #else
+            return config::release::enable_stacktrace();
+        #endif
     }
     
     /**
      * @brief Check if performance monitoring is active
      */
     static constexpr bool enable_performance_monitoring() noexcept {
-        return true; // Configuration-dependent in implementation
+        #ifdef HELLOWORLD_DEBUG_BUILD
+            return config::debug::enable_position_tracking();
+        #else
+            return config::release::enable_position_tracking();
+        #endif
     }
 
 private:
@@ -133,9 +160,86 @@ ConfigAwareValidationResult<MessageType> validate_greeting_message(std::string_v
 /**
  * @brief Create validation error appropriate for current configuration
  */
-inline GreetingError make_validation_error(const std::string& message) {
-    return GreetingError::InvalidName;
+#ifdef HELLOWORLD_DEBUG_BUILD
+inline ValidationError make_config_aware_validation_error(
+    GreetingError code,
+    const std::string& message,
+    const std::string& input = ""
+) {
+    return config::debug::make_validation_error(code, message, input);
 }
+
+inline ValidationError make_config_aware_empty_name_error(const std::string& input) {
+    return config::debug::make_empty_name_error(input);
+}
+
+inline ValidationError make_config_aware_invalid_characters_error(
+    const std::string& input, 
+    size_t position, 
+    char invalid_char
+) {
+    return config::debug::make_invalid_characters_error(input, position, invalid_char);
+}
+
+inline ValidationError make_config_aware_name_too_long_error(
+    const std::string& input,
+    size_t max_length
+) {
+    return config::debug::make_name_too_long_error(input, max_length);
+}
+
+inline ValidationError make_config_aware_empty_message_error(const std::string& input) {
+    return config::debug::make_empty_message_error(input);
+}
+
+inline ValidationError make_config_aware_message_too_long_error(
+    const std::string& input,
+    size_t max_length
+) {
+    return config::debug::make_message_too_long_error(input, max_length);
+}
+
+#else
+
+inline ValidationError make_config_aware_validation_error(
+    GreetingError code,
+    const std::string& = "",
+    const std::string& = ""
+) {
+    return config::release::make_validation_error(code);
+}
+
+inline ValidationError make_config_aware_empty_name_error(const std::string& = "") {
+    return config::release::make_empty_name_error();
+}
+
+inline ValidationError make_config_aware_invalid_characters_error(
+    const std::string& = "", 
+    size_t = 0, 
+    char = '\0'
+) {
+    return config::release::make_invalid_characters_error();
+}
+
+inline ValidationError make_config_aware_name_too_long_error(
+    const std::string& = "",
+    size_t = 0
+) {
+    return config::release::make_name_too_long_error();
+}
+
+inline ValidationError make_config_aware_empty_message_error(const std::string& = "") {
+    return config::release::make_empty_message_error();
+}
+
+inline ValidationError make_config_aware_message_too_long_error(
+    const std::string& = "",
+    size_t = 0
+) {
+    return config::release::make_message_too_long_error();
+}
+
+#endif
 
 // ============================================================================
 // Configuration-Aware Validation Concepts

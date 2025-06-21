@@ -9,6 +9,7 @@
 #include "greeting/person_name.hpp"
 #include "greeting/greeting_message.hpp"
 #include "config/build_config.hpp"
+#include "config/release_config.hpp"
 
 namespace greeting::validation {
 

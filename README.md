@@ -19,7 +19,7 @@ ___  __ ____  |__|  __| _/    ____ _______   ____   ____ _/  |_
 
 [![C++23](https://img.shields.io/badge/C%2B%2B-23-blue.svg)](https://en.cppreference.com/w/cpp/23)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-1209_passing-brightgreen.svg)](#testing)
+[![Tests](https://img.shields.io/badge/tests-1267_passing-brightgreen.svg)](#testing)
 [![Build Config](https://img.shields.io/badge/build_config-C%2B%2B23_advanced-orange.svg)](#build-configuration-system)
 [![Validation](https://img.shields.io/badge/validation-dual_path_active-purple.svg)](#configuration-aware-validation)
 
@@ -30,7 +30,7 @@ This project transforms a simple "Hello World" into a sophisticated C++23 archit
 - **🏗️ Clean Architecture**: Domain-driven design with layered separation
 - **⚡ Modern C++23**: `std::expected`, `if consteval`, `consteval`, concepts
 - **🔧 Advanced Build Configuration**: Compile-time configuration system with zero-overhead abstractions
-- **🧪 Configuration-Aware Testing**: 1209 assertions across 54 test cases
+- **🧪 Configuration-Aware Testing**: 1267 assertions across 64 test cases
 - **⚡ Dual-Path Validation**: Debug-comprehensive, release-optimized validation
 - **⚡ Build Optimization**: 95% faster builds with external Catch2 integration
 - **📚 Educational Focus**: Each pattern explained and documented
@@ -59,7 +59,7 @@ mkdir build && cd build
 cmake .. -G Ninja
 ninja
 
-# Run tests (1209 assertions, 54 test cases)
+# Run tests (1267 assertions, 64 test cases)
 ./greeting_tests
 
 # Run configuration demo
@@ -96,7 +96,7 @@ helloworldcleancode/
 
 The project uses **Catch2 v3** for comprehensive unit testing with:
 
-- ✅ **929 assertions** across **46 test cases**
+- ✅ **1267 assertions** across **64 test cases**
 - ✅ **BDD-style** test descriptions
 - ✅ **Comprehensive coverage** of all core functionality
 - ✅ **Modern C++23** testing patterns
@@ -220,8 +220,81 @@ if (result.has_value()) {
 # Run validation-specific tests
 ./greeting_tests "[config][validation]"
 
-# All validation tests (281 assertions)
+# All validation tests (373 assertions)
 ./greeting_tests "[config]"
+```
+
+## 🚨 **Error Handling Configuration System**
+
+### **Configuration-Aware Error Types**
+
+The project features a sophisticated error handling system that adapts to build configuration, providing rich diagnostics in debug builds and minimal overhead in release builds:
+
+#### **🔍 Debug Builds - Rich Error Context**
+
+```cpp
+// Debug error with comprehensive context
+auto error = debug::make_invalid_characters_error("john@doe", 4, '@');
+std::cout << error.message() << std::endl;
+
+// Output:
+// Error: Name contains invalid character '@' (Code: 1008)
+// Input: "john@doe" (position 4)
+// Location: validation.cpp:45:12
+// Suggestions:
+//   - Use only alphabetic characters, spaces, hyphens, apostrophes, and periods
+//   - Remove or replace the invalid character
+```
+
+#### **⚡ Release Builds - Minimal Overhead**
+
+```cpp
+// Release error with zero-overhead design
+constexpr auto error = release::make_invalid_characters_error();
+std::cout << error.message() << std::endl;  // Output: "Invalid characters"
+```
+
+### **Error Type Features**
+
+#### **Debug Configuration** (`debug_config.hpp`)
+
+- **📍 Source Location**: Automatic capture of file, line, column
+- **📝 Detailed Messages**: Human-readable error descriptions
+- **💡 Suggestions**: Actionable fixes for common errors
+- **📊 Input Context**: Position tracking within invalid input
+- **🎯 Rich Diagnostics**: Comprehensive error information
+
+#### **Release Configuration** (`release_config.hpp`)
+
+- **⚡ Zero Overhead**: Constexpr error creation
+- **📦 Minimal Memory**: Single error code storage
+- **🚀 Compile-Time**: Optimization opportunities
+- **🎯 Essential Info**: Core error identification only
+
+### **Configuration-Aware Error Creation**
+
+The system provides unified error creation functions that adapt based on build configuration:
+
+```cpp
+// Automatically selects appropriate error type
+auto name_error = make_config_aware_empty_name_error("   ");
+auto char_error = make_config_aware_invalid_characters_error("test@", 4, '@');
+
+// Debug builds: Rich context with suggestions
+// Release builds: Minimal overhead, essential info only
+```
+
+### **Error Testing**
+
+```bash
+# Test debug error features
+./greeting_tests "[debug][config][error]"      # 22 assertions
+
+# Test release optimizations  
+./greeting_tests "[release][config][optimization]"  # 24 assertions
+
+# All error handling tests
+./greeting_tests "[config][error]"             # 58 assertions
 ```
 
 ## 🎨 **Design Patterns**
@@ -340,7 +413,7 @@ if (result.has_value()) {
 
 ### **5.1 Testing Framework** ✅ *Complete*
 
-- [x] Unit tests for all domain logic *(929 assertions across 46 test cases)*
+- [x] Unit tests for all domain logic *(1267 assertions across 64 test cases)*
 - [ ] Integration tests for component interaction
 - [ ] Property-based testing for edge cases
 - [ ] Benchmark tests for performance regression
@@ -390,23 +463,32 @@ if (result.has_value()) {
 |-------|--------|------------|
 | **Phase 1: Configuration Infrastructure** | ✅ **Complete** | **100%** |
 | **Phase 2.1: Configuration-Aware Validation** | ✅ **Complete** | **100%** |
-| **Phase 2.2: Error Handling Configuration** | 🔄 In Progress | 0% |
+| **Phase 2.2: Error Handling Configuration** | ✅ **Complete** | **100%** |
 | **Phase 2.3: Domain Type Integration** | ⏳ Planned | 0% |
 | **Phase 3: C++23 Features** | ⏳ Planned | 0% |
 | **Phase 4: Advanced Patterns** | ⏳ Planned | 0% |
 | **Phase 5: Testing & Quality** | 🔄 In Progress | **75%** (comprehensive validation tests complete) |
 | **Phase 6: Performance & Polish** | ⏳ Planned | 0% |
 
-**Overall Progress: 42%** *(Phase 1 + 2.1 complete, comprehensive validation system operational)*
+**Overall Progress: 48%** *(Phase 1 + 2.1 + 2.2 complete, configuration-aware error handling operational)*
 
-### **Recent Achievements (Phase 2.1)**
+### **Recent Achievements (Phase 2.2)**
+
+- ✅ **Configuration-aware error types** with debug/release contexts
+- ✅ **Rich debug error context** with source location, suggestions, input tracking
+- ✅ **Zero-overhead release errors** with compile-time optimization
+- ✅ **Unified error creation API** adapting to build configuration
+- ✅ **Error handling test suite** (58 additional assertions for error contexts)
+- ✅ **Documentation integration** with comprehensive examples
+
+### **Previous Achievements (Phase 2.1)**
 
 - ✅ **Dual-path validation system** with debug/release behavior
 - ✅ **Configuration-aware character validation** (no numbers in names)
 - ✅ **String validation with type constraints** (C-style + string-like types)
 - ✅ **Control character detection** (embedded null bytes, control chars)
 - ✅ **Integration with domain types** (`PersonName::create()`, `GreetingMessage::create()`)
-- ✅ **Comprehensive test suite** (1209 assertions, 54 test cases)
+- ✅ **Comprehensive test suite** (1267 assertions, 64 test cases)
 - ✅ **Zero compilation errors** and stable test results
 
 ---

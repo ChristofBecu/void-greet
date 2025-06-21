@@ -9,6 +9,7 @@
 #include "greeting/person_name.hpp"
 #include "greeting/greeting_message.hpp"
 #include "config/build_config.hpp"
+#include "config/debug_config.hpp"
 #include <cctype>
 #include <algorithm>
 #include <string>
