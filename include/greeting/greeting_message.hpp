@@ -1,7 +1,7 @@
 #pragma once
 
 #include "expected.hpp"
-#include "consteval_validation.hpp"
+#include "config_aware_validation.hpp"
 #include <string>
 #include <string_view>
 
@@ -14,16 +14,12 @@ namespace greeting {
  * arbitrary strings where a greeting message is expected.
  */
 class GreetingMessage {
-private:
-    struct PrivateTag {};
-
 public:
     /**
-     * @brief Private constructor tag - for internal use only
-     * @param message The validated greeting message
-     * @param tag Private construction tag
+     * @brief Internal construction tag - for validation framework use only
+     * DO NOT USE DIRECTLY - Use GreetingMessage::create() instead
      */
-    explicit GreetingMessage(std::string message, PrivateTag) : value_(std::move(message)) {}
+    struct InternalTag {};
 
     /**
      * @brief Create a GreetingMessage from a string_view with validation
@@ -31,12 +27,13 @@ public:
      * @return Result<GreetingMessage> containing the GreetingMessage or an error
      */
     [[nodiscard]] static Result<GreetingMessage> create(std::string_view message) noexcept {
-        // Use compile-time validation when possible
-        if (auto error = consteval_validation::validateGreetingMessage(message)) {
-            return *error;
+        // Use configuration-aware validation
+        auto validation_result = greeting::validation::validate_greeting_message<GreetingMessage>(message);
+        if (!validation_result.has_value()) {
+            return validation_result.error();
         }
         
-        return GreetingMessage{std::string{message}, PrivateTag{}};
+        return validation_result.value();
     }
 
     /**
@@ -71,6 +68,14 @@ public:
         return value_.length();
     }
     
+    /**
+     * @brief Internal constructor - for validation framework use only
+     * DO NOT USE DIRECTLY - Use GreetingMessage::create() instead
+     * @param message The validated greeting message
+     * @param tag Internal construction tag
+     */
+    explicit GreetingMessage(std::string message, InternalTag) : value_(std::move(message)) {}
+
     // Comparison operators
     [[nodiscard]] bool operator==(const GreetingMessage& other) const noexcept {
         return value_ == other.value_;

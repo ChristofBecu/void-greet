@@ -39,7 +39,9 @@ bool validate_name_character_release(char c) noexcept {
         case '.':
             return true;
         default:
-            return false;
+            // Allow extended ASCII for international names (release mode)
+            unsigned char uc = static_cast<unsigned char>(c);
+            return uc >= 128;  // Allow extended ASCII
     }
 }
 
@@ -60,31 +62,52 @@ bool validate_string_length_release(std::string_view str, size_t min_len, size_t
  */
 template<typename NameType>
 ConfigAwareValidationResult<NameType> validate_person_name_release(std::string_view name) {
-    // Fast length check
-    if (!validate_string_length_release(name, 1, 100)) {
-        if (name.empty()) {
-            return Expected<NameType, GreetingError>{GreetingError::EmptyName};
-        } else if (name.length() > 100) {
-            return Expected<NameType, GreetingError>{GreetingError::NameTooLong};
-        } else {
-            return Expected<NameType, GreetingError>{GreetingError::NameTooShort};
+    // Fast empty check
+    if (name.empty()) {
+        return Expected<NameType, GreetingError>{GreetingError::EmptyName};
+    }
+    
+    // Fast whitespace-only check for release builds (simplified)
+    bool has_non_whitespace = false;
+    for (char c : name) {
+        if (c != ' ' && c != '\t' && c != '\n' && c != '\r') {
+            has_non_whitespace = true;
+            break;
         }
+    }
+    if (!has_non_whitespace) {
+        return Expected<NameType, GreetingError>{GreetingError::EmptyName};
+    }
+    
+    // Fast length check
+    if (name.length() > 100) {
+        return Expected<NameType, GreetingError>{GreetingError::NameTooLong};
+    }
+    if (name.length() < 2) {
+        return Expected<NameType, GreetingError>{GreetingError::NameTooShort};
     }
     
     // Fast character validation - optimized loop
     for (char c : name) {
         if (!validate_name_character_release(c)) {
-            return Expected<NameType, GreetingError>{GreetingError::InvalidCharacters};
+            return Expected<NameType, GreetingError>{GreetingError::InvalidName};
         }
     }
     
-    // Direct construction for performance - use the create method
-    auto result = NameType::create(name);
-    if (result.has_value()) {
-        return Expected<NameType, GreetingError>{result.value()};
-    } else {
+    // Check for names starting/ending with special characters (release mode - minimal checks)
+    char first_char = name.front();
+    char last_char = name.back();
+    
+    if (first_char == '-' || first_char == '\'' || first_char == '.') {
         return Expected<NameType, GreetingError>{GreetingError::InvalidName};
     }
+    if (last_char == '-' || last_char == '\'' || (last_char == '.' && name != "Dr.")) {
+        return Expected<NameType, GreetingError>{GreetingError::InvalidName};
+    }
+    
+    // Direct construction for performance - use internal constructor
+    NameType validated_name{std::string{name}, typename NameType::InternalTag{}};
+    return Expected<NameType, GreetingError>{std::move(validated_name)};
 }
 
 // ============================================================================
@@ -96,32 +119,41 @@ ConfigAwareValidationResult<NameType> validate_person_name_release(std::string_v
  */
 template<typename MessageType>
 ConfigAwareValidationResult<MessageType> validate_greeting_message_release(std::string_view message) {
+    // Fast empty check
+    if (message.empty()) {
+        return Expected<MessageType, GreetingError>{GreetingError::EmptyMessage};
+    }
+    
+    // Fast whitespace-only check for release builds
+    bool has_non_whitespace = false;
+    for (char c : message) {
+        if (c != ' ' && c != '\t' && c != '\n' && c != '\r') {
+            has_non_whitespace = true;
+            break;
+        }
+    }
+    if (!has_non_whitespace) {
+        return Expected<MessageType, GreetingError>{GreetingError::EmptyMessage};
+    }
+    
     // Fast length check
-    if (!validate_string_length_release(message, 1, 500)) {
-        if (message.empty()) {
-            return Expected<MessageType, GreetingError>{GreetingError::EmptyMessage};
-        } else if (message.length() > 500) {
-            return Expected<MessageType, GreetingError>{GreetingError::MessageTooLong};
-        } else {
+    if (message.length() > 500) {
+        return Expected<MessageType, GreetingError>{GreetingError::MessageTooLong};
+    }
+    
+    // Minimal content validation in release mode
+    // Only check for actual control characters that could cause display issues
+    for (char c : message) {
+        // Only reject actual control characters (0-31) except allowed whitespace
+        // Allow all characters >= 32 (including extended ASCII and UTF-8 sequences)
+        if (c >= 0 && c < 32 && c != '\t' && c != '\n' && c != '\r') {
             return Expected<MessageType, GreetingError>{GreetingError::InvalidMessage};
         }
     }
     
-    // Minimal content validation in release mode
-    // Only check for completely invalid characters (control characters)
-    for (char c : message) {
-        if (c < 32 && c != '\t' && c != '\n' && c != '\r') {
-            return Expected<MessageType, GreetingError>{GreetingError::InvalidCharacters};
-        }
-    }
-    
-    // Direct construction for performance - use the create method
-    auto result = MessageType::create(message);
-    if (result.has_value()) {
-        return Expected<MessageType, GreetingError>{result.value()};
-    } else {
-        return Expected<MessageType, GreetingError>{GreetingError::InvalidMessage};
-    }
+    // Direct construction for performance - use internal constructor
+    MessageType validated_message{std::string{message}, typename MessageType::InternalTag{}};
+    return Expected<MessageType, GreetingError>{std::move(validated_message)};
 }
 
 // ============================================================================

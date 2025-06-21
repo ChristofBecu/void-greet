@@ -1,7 +1,7 @@
 #pragma once
 
 #include "expected.hpp"
-#include "consteval_validation.hpp"
+#include "config_aware_validation.hpp"
 #include <string>
 #include <string_view>
 
@@ -14,16 +14,12 @@ namespace greeting {
  * arbitrary strings where a person name is expected.
  */
 class PersonName {
-private:
-    struct PrivateTag {};
-
 public:
     /**
-     * @brief Private constructor tag - for internal use only
-     * @param name The validated person's name
-     * @param tag Private construction tag
+     * @brief Internal construction tag - for validation framework use only
+     * DO NOT USE DIRECTLY - Use PersonName::create() instead
      */
-    explicit PersonName(std::string name, PrivateTag) : value_(std::move(name)) {}
+    struct InternalTag {};
 
     /**
      * @brief Create a PersonName from a string_view with validation
@@ -31,12 +27,13 @@ public:
      * @return Result<PersonName> containing the PersonName or an error
      */
     [[nodiscard]] static Result<PersonName> create(std::string_view name) noexcept {
-        // Use compile-time validation when possible
-        if (auto error = consteval_validation::validatePersonName(name)) {
-            return *error;
+        // Use configuration-aware validation
+        auto validation_result = greeting::validation::validate_person_name<PersonName>(name);
+        if (!validation_result.has_value()) {
+            return validation_result.error();
         }
         
-        return PersonName{std::string{name}, PrivateTag{}};
+        return validation_result.value();
     }
 
     /**
@@ -71,6 +68,14 @@ public:
         return value_.length();
     }
     
+    /**
+     * @brief Internal constructor - for validation framework use only
+     * DO NOT USE DIRECTLY - Use PersonName::create() instead
+     * @param name The validated person's name
+     * @param tag Internal construction tag
+     */
+    explicit PersonName(std::string name, InternalTag) : value_(std::move(name)) {}
+
     // Comparison operators
     [[nodiscard]] bool operator==(const PersonName& other) const noexcept {
         return value_ == other.value_;

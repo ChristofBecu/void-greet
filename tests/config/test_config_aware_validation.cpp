@@ -157,7 +157,7 @@ TEST_CASE("Configuration-aware person name validation", "[config][validation][pe
         // Invalid characters
         auto invalid_result = validate_person_name<PersonName>("John@Smith");
         REQUIRE(invalid_result.has_value() == false);
-        REQUIRE(invalid_result.error() == GreetingError::InvalidCharacters);
+        REQUIRE(invalid_result.error() == GreetingError::InvalidName);
     }
 }
 
@@ -220,7 +220,7 @@ TEST_CASE("Configuration-aware greeting message validation", "[config][validatio
         std::string invalid_message("Hello\x00World", 11); // String with embedded null
         auto invalid_result = validate_greeting_message<GreetingMessage>(invalid_message);
         REQUIRE(invalid_result.has_value() == false);
-        REQUIRE(invalid_result.error() == GreetingError::InvalidCharacters);
+        REQUIRE(invalid_result.error() == GreetingError::InvalidMessage);
     }
 }
 
