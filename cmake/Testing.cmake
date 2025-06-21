@@ -22,6 +22,7 @@ add_executable(greeting_tests
     tests/unit/greeting/test_domain_validation.cpp
     tests/unit/greeting/test_phase2_integration.cpp
     tests/unit/strategy/test_strategy_interface.cpp
+    tests/unit/strategy/test_console_strategy.cpp
     tests/config/test_build_configuration.cpp
     tests/config/test_config_aware_validation.cpp
     tests/config/test_config_aware_type_system.cpp
