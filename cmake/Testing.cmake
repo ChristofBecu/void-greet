@@ -24,6 +24,7 @@ add_executable(greeting_tests
     tests/unit/strategy/test_strategy_interface.cpp
     tests/unit/strategy/test_console_strategy.cpp
     tests/unit/domain/test_formal_strategy.cpp
+    tests/unit/domain/test_casual_strategy.cpp
     tests/config/test_build_configuration.cpp
     tests/config/test_config_aware_validation.cpp
     tests/config/test_config_aware_type_system.cpp

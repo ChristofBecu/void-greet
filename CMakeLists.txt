@@ -78,6 +78,7 @@ add_library(HelloWorld_Domain STATIC
     src/domain/validation.cpp
     src/domain/console_strategy.cpp
     src/domain/formal_strategy.cpp
+    src/domain/casual_strategy.cpp
     src/config/debug_validation.cpp
     src/config/release_validation.cpp
 )
@@ -199,11 +200,17 @@ add_executable(demo_formal_strategy tools/demo_formal_strategy.cpp)
 target_link_libraries(demo_formal_strategy PRIVATE HelloWorld_Domain)
 target_compile_features(demo_formal_strategy PRIVATE cxx_std_23)
 
+# Casual Strategy Demo
+add_executable(demo_casual_strategy tools/demo_casual_strategy.cpp)
+target_link_libraries(demo_casual_strategy PRIVATE HelloWorld_Domain)
+target_compile_features(demo_casual_strategy PRIVATE cxx_std_23)
+
 # Apply build configuration if advanced system is available
 if(NOT HELLOWORLD_USE_BASIC_CONFIG)
     # apply_build_configuration(demo_configuration)
     apply_build_configuration(demo_console_strategy)
     apply_build_configuration(demo_formal_strategy)
+    apply_build_configuration(demo_casual_strategy)
 endif()
 
 # ============================================================================
