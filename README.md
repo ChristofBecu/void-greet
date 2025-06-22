@@ -59,8 +59,12 @@ mkdir build && cd build
 cmake .. -G Ninja
 ninja
 
-# Run tests (1267 assertions, 64 test cases)
+# Run tests (11508 assertions, 94 test cases)
 ./greeting_tests
+
+# Run strategy demos
+./demo_console_strategy    # Console output strategy demo  
+./demo_formal_strategy     # Formal greeting strategy demo
 
 # Run configuration demo
 ./demo_configuration
