@@ -30,6 +30,7 @@ add_executable(greeting_tests
     tests/config/test_config_aware_validation.cpp
     tests/config/test_config_aware_type_system.cpp
     tests/config/test_release_optimizations.cpp
+    tests/integration/test_strategy_config_integration.cpp
 )
 
 # Link with Catch2 and set up proper includes
@@ -37,6 +38,7 @@ target_link_libraries(greeting_tests
     PRIVATE 
     Catch2::Catch2WithMain
     HelloWorld_Domain
+    HelloWorld_Application
 )
 
 target_include_directories(greeting_tests 

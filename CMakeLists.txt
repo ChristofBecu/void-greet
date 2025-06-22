@@ -34,6 +34,10 @@ else()
     # Initialize the advanced C++23 build configuration system
     include(cmake/BuildConfigurations.cmake)
     initialize_build_configuration_system()
+    
+    # Include strategy configuration integration
+    include(cmake/StrategyConfigurationTargets.cmake)
+    setup_strategy_configuration_targets()
 endif()
 
 # ============================================================================
@@ -80,6 +84,7 @@ add_library(HelloWorld_Domain STATIC
     src/domain/formal_strategy.cpp
     src/domain/casual_strategy.cpp
     src/domain/strategy_context.cpp
+    src/domain/strategy_configuration_manager.cpp
     src/config/debug_validation.cpp
     src/config/release_validation.cpp
 )
@@ -108,15 +113,17 @@ endif()
 # Application Layer (Use Cases)
 # ============================================================================
 
-add_library(HelloWorld_Application INTERFACE)
+add_library(HelloWorld_Application STATIC
+    src/application/config_aware_strategy_registry.cpp
+)
 add_library(HelloWorld::Application ALIAS HelloWorld_Application)
 
 target_link_libraries(HelloWorld_Application 
-    INTERFACE HelloWorld_Domain
+    PUBLIC HelloWorld_Domain
 )
 
 target_compile_features(HelloWorld_Application 
-    INTERFACE cxx_std_23
+    PUBLIC cxx_std_23
 )
 
 # Apply build configuration if advanced system is available

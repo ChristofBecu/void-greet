@@ -27,9 +27,11 @@ StrategyContext::StrategyContext(const ContextConfig& config) noexcept
         // Debug builds initialize with comprehensive setup
         initializeDefaultStrategies();
         
+        #ifdef HELLOWORLD_DEBUG_BUILD
         if (config_.enable_metrics) {
             last_execution_.emplace();
         }
+        #endif
     } else {
         // Release builds use minimal initialization
         initializeDefaultStrategies();
@@ -39,9 +41,11 @@ StrategyContext::StrategyContext(const ContextConfig& config) noexcept
 StrategyContext::~StrategyContext() noexcept {
     if constexpr (greeting::config::is_debug_build()) {
         // Debug builds can log context destruction
+        #ifdef HELLOWORLD_DEBUG_BUILD
         if (config_.enable_metrics && total_greetings_ > 0) {
             // Could log performance summary
         }
+        #endif
     }
 }
 
@@ -92,9 +96,9 @@ Result<GreetingMessage> StrategyContext::greetWith(
     // Store execution context for debugging
     if constexpr (greeting::config::is_debug_build()) {
         if (config_.enable_metrics) {
+            #ifdef HELLOWORLD_DEBUG_BUILD
             last_execution_ = execution_context;
             total_greetings_++;
-            #ifdef HELLOWORLD_DEBUG_BUILD
             total_execution_time_ += execution_context.execution_time;
             #endif
         }
@@ -115,11 +119,11 @@ Result<GreetingMessage> StrategyContext::greetWithValidation(
     
     // Track validation steps in debug builds
     if constexpr (greeting::config::is_debug_build()) {
+        #ifdef HELLOWORLD_DEBUG_BUILD
         if (config_.enable_metrics && last_execution_.has_value()) {
-            #ifdef HELLOWORLD_DEBUG_BUILD
             last_execution_->validation_steps++;
-            #endif
         }
+        #endif
     }
     
     return greetWith(person_result.value(), strategy_type);
@@ -195,9 +199,11 @@ bool StrategyContext::updateConfig(const ContextConfig& config) noexcept {
     
     // Initialize metrics tracking if enabled
     if constexpr (greeting::config::is_debug_build()) {
+        #ifdef HELLOWORLD_DEBUG_BUILD
         if (config_.enable_metrics && !last_execution_.has_value()) {
             last_execution_.emplace();
         }
+        #endif
     }
     
     return true;
@@ -205,7 +211,11 @@ bool StrategyContext::updateConfig(const ContextConfig& config) noexcept {
 
 std::optional<ExecutionContext> StrategyContext::getLastExecution() const noexcept {
     if constexpr (greeting::config::is_debug_build()) {
+        #ifdef HELLOWORLD_DEBUG_BUILD
         return last_execution_;
+        #else
+        return std::nullopt;
+        #endif
     } else {
         return std::nullopt;
     }
@@ -224,7 +234,9 @@ bool StrategyContext::isValid() const noexcept {
 void StrategyContext::clearCache() const noexcept {
     if constexpr (greeting::config::is_debug_build()) {
         if (config_.enable_caching) {
+            #ifdef HELLOWORLD_DEBUG_BUILD
             performance_cache_.clear();
+            #endif
         }
     }
 }
@@ -237,14 +249,16 @@ std::string StrategyContext::getPerformanceMetrics() const noexcept {
         
         std::ostringstream oss;
         oss << "Strategy Context Performance Metrics:\n";
+        #ifdef HELLOWORLD_DEBUG_BUILD
         oss << "  Total greetings: " << total_greetings_ << "\n";
         
-        #ifdef HELLOWORLD_DEBUG_BUILD
         oss << "  Total execution time: " << total_execution_time_.count() << " microseconds\n";
         if (total_greetings_ > 0) {
             auto avg_time = total_execution_time_.count() / total_greetings_;
             oss << "  Average execution time: " << avg_time << " microseconds\n";
         }
+        #else
+        oss << "  Metrics available only in debug builds\n";
         #endif
         
         oss << "  Available strategies: " << strategies_.size() << "\n";

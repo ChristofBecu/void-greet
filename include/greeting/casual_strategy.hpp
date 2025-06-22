@@ -131,6 +131,20 @@ private:
 
 } // namespace greeting::strategy
 
+// ============================================================================
+// Strategy Factory Function
+// ============================================================================
+
+namespace greeting::strategy {
+
+/**
+ * @brief Factory function for creating casual strategy instances
+ * @return Unique pointer to casual strategy implementation
+ */
+[[nodiscard]] std::unique_ptr<IGreetingStrategy> createCasualStrategy() noexcept;
+
+} // namespace greeting::strategy
+
 // Specialization must be in greeting::strategy::traits namespace  
 namespace greeting::strategy::traits {
 
