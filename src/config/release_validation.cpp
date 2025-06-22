@@ -105,6 +105,18 @@ ConfigAwareValidationResult<NameType> validate_person_name_release(std::string_v
         return Expected<NameType, GreetingError>{GreetingError::InvalidName};
     }
     
+    // Check for consecutive spaces (consistent with debug builds)
+    for (size_t i = 1; i < name.length(); ++i) {
+        if (name[i-1] == ' ' && name[i] == ' ') {
+            return Expected<NameType, GreetingError>{GreetingError::InvalidName};
+        }
+    }
+    
+    // Check for leading/trailing whitespace
+    if (name.front() == ' ' || name.back() == ' ') {
+        return Expected<NameType, GreetingError>{GreetingError::InvalidName};
+    }
+    
     // Direct construction for performance - use internal constructor
     NameType validated_name{std::string{name}, typename NameType::InternalTag{}};
     return Expected<NameType, GreetingError>{std::move(validated_name)};
